@@ -6,13 +6,11 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: nginx/Dockerfile
     ports:
-      - "5000:5000"
+      - "80:80"
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/app/frontend
     networks:
       - app-network
 
@@ -20,8 +18,10 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    ports:
-      - "4000:4000"
+    # No need to expose port 3000 to the host machine
+    # as Nginx will proxy the requests internally
+    # ports:
+    #   - "3000:3000" 
     depends_on:
       - database
     environment:
@@ -36,8 +36,6 @@ services:
 
   database:
     image: mongo:latest
-    ports:
-      - "27017:27017"
     volumes:
       - mongo-data:/data/db
     networks:
