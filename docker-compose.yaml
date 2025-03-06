@@ -1,7 +1,5 @@
 # Docker Compose file
 # docker-compose.yml
-version: '3'
-
 services:
   frontend:
     build:

@@ -25,8 +25,8 @@ const corsOptions = {
     
     // List of allowed origins
     const allowedOrigins = [
-      'http://localhost:5000', 
-      'http://54.162.189.225:5000',
+      'http://localhost:3000', 
+      'http://54.162.189.225:80',
       // Add any other domains that need access
     ];
     
