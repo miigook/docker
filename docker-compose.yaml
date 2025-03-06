@@ -18,8 +18,8 @@ services:
       dockerfile: backend/Dockerfile
     # No need to expose port 3000 to the host machine
     # as Nginx will proxy the requests internally
-    # ports:
-    #   - "3000:3000" 
+    ports:
+      - "3000:3000" 
     depends_on:
       - database
     environment:
