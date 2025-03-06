@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-In-One Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --tertiary-color: #e74c3c;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .todo-card {
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .notes-card {
+            border-top: 4px solid var(--secondary-color);
+        }
+
+        .weather-card {
+            border-top: 4px solid var(--tertiary-color);
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .todo-list, .notes-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .todo-item, .note-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .todo-item.completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .todo-actions, .note-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .edit-btn {
+            background-color: #f39c12;
+        }
+
+        .edit-btn:hover {
+            background-color: #d35400;
+        }
+
+        .complete-btn {
+            background-color: #2ecc71;
+        }
+
+        .complete-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .weather-info {
+            text-align: center;
+        }
+
+        .weather-icon {
+            font-size: 3rem;
+            margin: 10px 0;
+        }
+
+        .weather-temp {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .weather-desc {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .weather-detail {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .note-content {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>All-In-One Dashboard</h1>
+            <p>Manage your tasks, notes, and check the weather in one place</p>
+        </header>
+
+        <div class="dashboard">
+            <!-- Todo List Section -->
+            <div class="card todo-card">
+                <div class="card-header">
+                    <h2 class="card-title">To-Do List</h2>
+                </div>
+                <form id="todo-form">
+                    <input type="text" id="todo-input" placeholder="Add a new task..." required>
+                    <button type="submit">Add Task</button>
+                </form>
+                <div class="todo-list" id="todo-list">
+                    <p class="loading">Loading your tasks...</p>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="card notes-card">
+                <div class="card-header">
+                    <h2 class="card-title">Notes</h2>
+                </div>
+                <form id="note-form">
+                    <input type="text" id="note-title" placeholder="Note title..." required>
+                    <textarea id="note-content" rows="4" placeholder="Write your note here..." required></textarea>
+                    <button type="submit">Save Note</button>
+                </form>
+                <div class="notes-list" id="notes-list">
+                    <p class="loading">Loading your notes...</p>
+                </div>
+            </div>
+
+            <!-- Weather Section -->
+            <div class="card weather-card">
+                <div class="card-header">
+                    <h2 class="card-title">Weather</h2>
+                </div>
+                <form id="weather-form">
+                    <input type="text" id="weather-location" placeholder="Enter a US location (city, state)">
+                    <button type="submit">Get Weather</button>
+                </form>
+                <div id="weather-container">
+                    <p class="loading">Enter a location to see weather information</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL - change this to match your backend server
+        const API_BASE_URL = 'http://localhost:3000/api';
+        
+        // DOM Elements
+        const todoForm = document.getElementById('todo-form');
+        const todoInput = document.getElementById('todo-input');
+        const todoList = document.getElementById('todo-list');
+        
+        const noteForm = document.getElementById('note-form');
+        const noteTitle = document.getElementById('note-title');
+        const noteContent = document.getElementById('note-content');
+        const notesList = document.getElementById('notes-list');
+        
+        const weatherForm = document.getElementById('weather-form');
+        const weatherLocation = document.getElementById('weather-location');
+        const weatherContainer = document.getElementById('weather-container');
+        
+        // Fetch todos from API
+        async function fetchTodos() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/todos`);
+                if (!response.ok) throw new Error('Failed to fetch todos');
+                const todos = await response.json();
+                renderTodos(todos);
+            } catch (error) {
+                todoList.innerHTML = `<p class="error-message">Error loading todos: ${error.message}</p>`;
+            }
+        }
+        
+        // Render todos in the UI
+        function renderTodos(todos) {
+            if (todos.length === 0) {
+                todoList.innerHTML = '<p>No tasks yet. Add one above!</p>';
+                return;
+            }
+            
+            todoList.innerHTML = todos.map(todo => `
+                <div class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo._id}">
+                    <span>${todo.text}</span>
+                    <div class="todo-actions">
+                        <button class="complete-btn" onclick="toggleTodoComplete('${todo._id}', ${!todo.completed})">
+                            ${todo.completed ? 'Undo' : 'Complete'}
+                        </button>
+                        <button class="edit-btn" onclick="editTodo('${todo._id}', '${todo.text}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteTodo('${todo._id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Add a new todo
+        async function addTodo(text) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/todos`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text })
+                });
+                
+                if (!response.ok) throw new Error('Failed to add todo');
+                fetchTodos();
+                todoInput.value = '';
+            } catch (error) {
+                alert(`Error adding todo: ${error.message}`);
+            }
+        }
+        
+        // Toggle todo completion status
+        async function toggleTodoComplete(id, completed) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/todos/${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ completed })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update todo');
+                fetchTodos();
+            } catch (error) {
+                alert(`Error updating todo: ${error.message}`);
+            }
+        }
+        
+        // Edit a todo
+        function editTodo(id, text) {
+            const newText = prompt('Edit task:', text);
+            if (newText && newText !== text) {
+                updateTodo(id, newText);
+            }
+        }
+        
+        // Update todo text
+        async function updateTodo(id, text) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/todos/${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update todo');
+                fetchTodos();
+            } catch (error) {
+                alert(`Error updating todo: ${error.message}`);
+            }
+        }
+        
+        // Delete a todo
+        async function deleteTodo(id) {
+            if (!confirm('Are you sure you want to delete this task?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/todos/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Failed to delete todo');
+                fetchTodos();
+            } catch (error) {
+                alert(`Error deleting todo: ${error.message}`);
+            }
+        }
+        
+        // Fetch notes from API
+        async function fetchNotes() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/notes`);
+                if (!response.ok) throw new Error('Failed to fetch notes');
+                const notes = await response.json();
+                renderNotes(notes);
+            } catch (error) {
+                notesList.innerHTML = `<p class="error-message">Error loading notes: ${error.message}</p>`;
+            }
+        }
+        
+        // Render notes in the UI
+        function renderNotes(notes) {
+            if (notes.length === 0) {
+                notesList.innerHTML = '<p>No notes yet. Add one above!</p>';
+                return;
+            }
+            
+            notesList.innerHTML = notes.map(note => `
+                <div class="note-item" data-id="${note._id}">
+                    <div>
+                        <h3>${note.title}</h3>
+                        <p class="note-content">${note.content}</p>
+                        <small>Created: ${new Date(note.createdAt).toLocaleString()}</small>
+                    </div>
+                    <div class="note-actions">
+                        <button class="edit-btn" onclick="editNote('${note._id}', '${note.title.replace(/'/g, "\\'")}', '${note.content.replace(/'/g, "\\'")}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteNote('${note._id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Add a new note
+        async function addNote(title, content) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/notes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+                
+                if (!response.ok) throw new Error('Failed to add note');
+                fetchNotes();
+                noteTitle.value = '';
+                noteContent.value = '';
+            } catch (error) {
+                alert(`Error adding note: ${error.message}`);
+            }
+        }
+        
+        // Edit a note
+        function editNote(id, title, content) {
+            const newTitle = prompt('Edit note title:', title);
+            if (!newTitle) return;
+            
+            const newContent = prompt('Edit note content:', content);
+            if (!newContent) return;
+            
+            if (newTitle !== title || newContent !== content) {
+                updateNote(id, newTitle, newContent);
+            }
+        }
+        
+        // Update note
+        async function updateNote(id, title, content) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update note');
+                fetchNotes();
+            } catch (error) {
+                alert(`Error updating note: ${error.message}`);
+            }
+        }
+        
+        // Delete a note
+        async function deleteNote(id) {
+            if (!confirm('Are you sure you want to delete this note?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Failed to delete note');
+                fetchNotes();
+            } catch (error) {
+                alert(`Error deleting note: ${error.message}`);
+            }
+        }
+        
+        // Get weather data
+        async function getWeather(location) {
+            try {
+                weatherContainer.innerHTML = '<p class="loading">Getting weather information...</p>';
+                
+                const response = await fetch(`${API_BASE_URL}/weather?location=${encodeURIComponent(location)}`);
+                if (!response.ok) throw new Error('Failed to get weather data');
+                
+                const weatherData = await response.json();
+                renderWeather(weatherData, location);
+            } catch (error) {
+                weatherContainer.innerHTML = `<p class="error-message">Error getting weather: ${error.message}</p>`;
+            }
+        }
+        
+        // Render weather data in the UI
+        function renderWeather(data, location) {
+            const { temperature, forecast, humidity, windSpeed, windDirection } = data;
+            
+            // Choose a weather icon based on the forecast
+            let weatherIcon = '☀️'; // Default: sunny
+            if (forecast.toLowerCase().includes('rain')) {
+                weatherIcon = '🌧️';
+            } else if (forecast.toLowerCase().includes('cloud')) {
+                weatherIcon = '☁️';
+            } else if (forecast.toLowerCase().includes('snow')) {
+                weatherIcon = '❄️';
+            } else if (forecast.toLowerCase().includes('thunder')) {
+                weatherIcon = '⚡';
+            } else if (forecast.toLowerCase().includes('fog')) {
+                weatherIcon = '🌫️';
+            }
+            
+            weatherContainer.innerHTML = `
+                <div class="weather-info">
+                    <h3>${location}</h3>
+                    <div class="weather-icon">${weatherIcon}</div>
+                    <div class="weather-temp">${temperature}°F</div>
+                    <div class="weather-desc">${forecast}</div>
+                    <div class="weather-details">
+                        <div class="weather-detail">
+                            <span>Humidity</span>
+                            <strong>${humidity}%</strong>
+                        </div>
+                        <div class="weather-detail">
+                            <span>Wind</span>
+                            <strong>${windSpeed} mph ${windDirection}</strong>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Event Listeners
+        todoForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = todoInput.value.trim();
+            if (text) {
+                addTodo(text);
+            }
+        });
+        
+        noteForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = noteTitle.value.trim();
+            const content = noteContent.value.trim();
+            if (title && content) {
+                addNote(title, content);
+            }
+        });
+        
+        weatherForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const location = weatherLocation.value.trim();
+            if (location) {
+                getWeather(location);
+            }
+        });
+        
+        // Initial data loading
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchTodos();
+            fetchNotes();
+        });
+    </script>
+</body>
+</html>
