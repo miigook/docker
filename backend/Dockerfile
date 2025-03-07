@@ -1,7 +1,10 @@
 # Backend Dockerfile
 # backend/Dockerfile
-FROM node:18-alpine
 
+#image to pull
+FROM node:18-alpine 
+
+#initialize /app directory
 WORKDIR /app
 
 # Copy package.json and package-lock.json
