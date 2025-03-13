@@ -38,6 +38,10 @@ services: #abstract definition of compute resource which can be scaled and repla
     networks:
       - loki-net
     restart: unless-stopped
+    
+networks:
+  loki-net:
+    external: true
 
 volumes:
   mongo-data:
