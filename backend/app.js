@@ -12,7 +12,7 @@ const noteRoutes = require('./routes/notes');
 
 // Create Express app
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 
 // In app.js, replace the current CORS middleware setup with this:

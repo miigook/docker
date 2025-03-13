@@ -4,7 +4,8 @@
 #image to pull
 FROM node:18-alpine 
 
-#initialize /app directory
+#initialize /app working directory The WORKDIR instruction sets the working directory for any 
+#RUN, CMD, ENTRYPOINT, COPY and ADD instructions that follow it in the Dockerfile.
 WORKDIR /app
 
 # Copy package.json and package-lock.json
@@ -20,7 +21,7 @@ COPY ./backend .
 RUN mkdir -p public
 
 # Expose port
-EXPOSE 3000
+EXPOSE 4000
 
 # Start the application
 CMD ["npm", "start"]
